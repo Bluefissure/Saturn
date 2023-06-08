@@ -16,7 +16,6 @@ using DigitalRune.Collections;
 using DigitalRune.Mathematics.Algebra;
 using DigitalRune.Mathematics.Interpolation;
 using ImGuiNET;
-using imnodesNET;
 using Saturn.Animations;
 using Saturn.Animations.EasingFunctions;
 using Saturn.Infrastructures;
@@ -160,7 +159,7 @@ namespace Saturn
 				SliderFloat("speed", ref speed, 0.01f, 10, speed.ToString(), ImGuiSliderFlags.Logarithmic | ImGuiSliderFlags.NoRoundToFormat);
 
 				TextUnformatted($"EyePath:\nCount: {eyePath.Count}\tLength: {eyePath.LastOrDefault()?.Parameter}");
-				SameLine(GetWindowContentRegionWidth() / 2);
+				SameLine((GetWindowContentRegionMax().X - GetWindowContentRegionMin().X) / 2);
 				TextUnformatted($"TargetPath:\nCount: {targetPath.Count}\tLength: {targetPath.LastOrDefault()?.Parameter}");
 
 				if (BeginTable("PATHTABLE", 5))
@@ -287,10 +286,9 @@ namespace Saturn
 				TextUnformatted(freecaming && ReceiveControl ? "CONTROLLING" : "");
 
 				TextUnformatted("W A S D    Move");
-				TextUnformatted("E          Up");
-				TextUnformatted("Q          Down");
+				TextUnformatted("SPACE      Up");
+				TextUnformatted("CONTROL    Down");
 				TextUnformatted("SHIFT      Speed+");
-				TextUnformatted("CONTROL    Speed-");
 				TextUnformatted("ESCAPE     Exit");
 				PopFont();
 				if (freecaming)
@@ -300,31 +298,31 @@ namespace Saturn
 					{
 						ImGui.GetIO().WantTextInput = true;
 
-						if (IsKeyReleased((int)VirtualKey.C))
+						if (IsKeyReleased(ImGuiKey.C))
 						{
 							AddCurrentCamPositionToPath();
 						}
 
-						var delta = IsKeyDown((int)VirtualKey.SHIFT) ? currentCamDirection :
-							IsKeyDown((int)VirtualKey.MENU) ? currentCamDirection * 0.04f : currentCamDirection * 0.2f;
-						var deltaY = IsKeyDown((int)VirtualKey.SHIFT) ? Vector3.UnitY :
-							IsKeyDown((int)VirtualKey.MENU) ? Vector3.UnitY * 0.04f : Vector3.UnitY * 0.2f;
+						var delta = IsKeyDown(ImGuiKey.LeftShift) ? currentCamDirection :
+							IsKeyDown(ImGuiKey.Menu) ? currentCamDirection * 0.04f : currentCamDirection * 0.2f;
+						var deltaY = IsKeyDown(ImGuiKey.LeftShift) ? Vector3.UnitY :
+							IsKeyDown(ImGuiKey.Menu) ? Vector3.UnitY * 0.04f : Vector3.UnitY * 0.2f;
 
 
 						delta *= (float)(api.Framework.UpdateDelta.TotalMilliseconds / 16.6666666666667D);
 						deltaY *= (float)(api.Framework.UpdateDelta.TotalMilliseconds / 16.6666666666667D);
 
-						if (IsKeyDown((int)VirtualKey.W)) freeEye += delta;
-						if (IsKeyDown((int)VirtualKey.S)) freeEye -= delta;
-						if (IsKeyDown((int)VirtualKey.A)) freeEye -= Vector3.Cross(delta, Vector3.UnitY);
-						if (IsKeyDown((int)VirtualKey.D)) freeEye += Vector3.Cross(delta, Vector3.UnitY);
-						if (IsKeyDown((int)VirtualKey.R)) freeEye = api.ClientState.LocalPlayer?.Position ?? Vector3.Zero;
-						//if (IsKeyDown((int)VirtualKey.E)) freeEye += Vector3.Normalize(Vector3.Cross(delta, Vector3.Cross(delta, Vector3.UnitY)));
-						//if (IsKeyDown((int)VirtualKey.Q)) freeEye -= Vector3.Normalize(Vector3.Cross(delta, Vector3.Cross(delta, Vector3.UnitY)));
-						if (IsKeyDown((int)VirtualKey.SPACE)) freeEye += deltaY;
-						if (IsKeyDown((int)VirtualKey.CONTROL)) freeEye -= deltaY;
+						if (IsKeyDown(ImGuiKey.W)) freeEye += delta;
+						if (IsKeyDown(ImGuiKey.S)) freeEye -= delta;
+						if (IsKeyDown(ImGuiKey.A)) freeEye -= Vector3.Cross(delta, Vector3.UnitY);
+						if (IsKeyDown(ImGuiKey.D)) freeEye += Vector3.Cross(delta, Vector3.UnitY);
+						if (IsKeyDown(ImGuiKey.R)) freeEye = api.ClientState.LocalPlayer?.Position ?? Vector3.Zero;
+						//if (IsKeyDown(ImGuiKey.E)) freeEye += Vector3.Normalize(Vector3.Cross(delta, Vector3.Cross(delta, Vector3.UnitY)));
+						//if (IsKeyDown(ImGuiKey.Q)) freeEye -= Vector3.Normalize(Vector3.Cross(delta, Vector3.Cross(delta, Vector3.UnitY)));
+						if (IsKeyDown(ImGuiKey.Space)) freeEye += deltaY;
+						if (IsKeyDown(ImGuiKey.LeftCtrl)) freeEye -= deltaY;
 
-						if (IsKeyDown((int)VirtualKey.ESCAPE))
+						if (IsKeyDown(ImGuiKey.Escape))
 						{
 							freecaming = false;
 						}

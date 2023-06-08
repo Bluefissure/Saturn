@@ -1,17 +1,21 @@
 ﻿using System;
+using Dalamud.Game.ClientState;
+using Dalamud.IoC;
 using Dalamud.Plugin;
 using Saturn.Infrastructures;
 
 namespace Saturn
 {
 	public class Saturn : IDalamudPlugin
-	{
-		public Saturn(DalamudPluginInterface pluginInterface)
+    {
+        public Saturn(
+            [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
 		{
 			api.Initialize(this, pluginInterface);
 			OffsetManager.Setup(api.SigScanner);
 			_ = ViewMatrixHook.Instance;
 			_ = Ui.Instance;
+
 		}
 
 		public string Name => nameof(Saturn);

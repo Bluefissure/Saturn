@@ -132,6 +132,20 @@ namespace Saturn.Infrastructures
             }
 
             _pluginCommandManager ??= new(plugin);
+            Framework.Update += checkInCombat;
+        }
+
+        private static void checkInCombat(Framework framework)
+        {
+            if (ClientState.LocalPlayer == null)
+            {
+                return;
+            }
+            if (ClientState.LocalPlayer.StatusFlags.HasFlag(Dalamud.Game.ClientState.Objects.Enums.StatusFlags.InCombat))
+            {
+                ViewMatrixHook.Instance.ClearControls();
+                Ui.Instance.freecaming = false;
+            }
         }
 
         public static api operator +(api container, object o)
@@ -148,7 +162,11 @@ namespace Saturn.Infrastructures
 
         public static void Initialize(IDalamudPlugin plugin, DalamudPluginInterface pluginInterface) => _ = new api(plugin, pluginInterface);
 
-        public static void Dispose() => _pluginCommandManager?.Dispose();
+        public static void Dispose()
+        {
+            _pluginCommandManager?.Dispose();
+            Framework.Update -= checkInCombat;
+        }
     }
 
     #region PluginCommandManager
